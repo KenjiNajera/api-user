@@ -13,13 +13,12 @@ SECRET_KEY = 'django-insecure-5eta7)uotxptg8g0cpk^iw_a6o0hl5rwcs6lydnkjyzm7%38wg
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['https://striker-one.herokuapp.com/']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'whitenoise.runserver_nostatic',
     'myapi',
     'rest_framework',
     'django.contrib.admin',
@@ -64,13 +63,11 @@ WSGI_APPLICATION = 'Home.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-import dj_database_url
-from decouple import config
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default=config('DATABASE_URL')
-    )
+    import dj_database_url  
+db_from_env = dj_database_url.config(conn_max_age=500)  
+DATABASES['default'].update(db_from_env)
     #conexion local
     #'default': {
     #    'ENGINE': 'django.db.backends.sqlite3',
@@ -125,10 +122,13 @@ import django_heroku
 import os
 
 django_heroku.settings(locals())
-STATIC_HOST = os.environ.get('DJANGO_STATIC_HOST', '')
-STATIC_URL = STATIC_HOST + '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/1.9/howto/static-files/
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_URL = '/static/'
 
 # Extra places for collectstatic to find static files.
 STATICFILES_DIRS = (
